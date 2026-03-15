@@ -5,11 +5,10 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { formOptions } from "@tanstack/react-form";
 
-// ❌ Missing dependency
-// import { useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
-// ❌ Missing module
-// import { useTRPC } from "@/trpc/client";
+
+import { useTRPC } from "@/trpc/client";
 
 import { useAppForm } from "@/hooks/use-app-form";
 
