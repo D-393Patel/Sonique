@@ -1,4 +1,4 @@
-// import * as Sentry from "@sentry/nextjs";
+import * as Sentry from "@sentry/nextjs";
 import { z } from "zod";
 // import { polar } from "@/lib/polar";
 import { env } from "@/lib/env";
@@ -91,28 +91,27 @@ export const generationsRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
 
-      // ❌ Subscription check removed (Polar not configured)
-      /*
-      try {
-        const customerState = await polar.customers.getStateExternal({
-          externalId: ctx.orgId,
-        });
-        const hasActiveSubscription =
-          (customerState.activeSubscriptions ?? []).length > 0;
-        if (!hasActiveSubscription) {
-          throw new TRPCError({
-            code: "FORBIDDEN",
-            message: "SUBSCRIPTION_REQUIRED",
-          });
-        }
-      } catch (err) {
-        if (err instanceof TRPCError) throw err;
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "SUBSCRIPTION_REQUIRED",
-        });
-      }
-      */
+      
+      // try {
+      //   const customerState = await polar.customers.getStateExternal({
+      //     externalId: ctx.orgId,
+      //   });
+      //   const hasActiveSubscription =
+      //     (customerState.activeSubscriptions ?? []).length > 0;
+      //   if (!hasActiveSubscription) {
+      //     throw new TRPCError({
+      //       code: "FORBIDDEN",
+      //       message: "SUBSCRIPTION_REQUIRED",
+      //     });
+      //   }
+      // } catch (err) {
+      //   if (err instanceof TRPCError) throw err;
+      //   throw new TRPCError({
+      //     code: "FORBIDDEN",
+      //     message: "SUBSCRIPTION_REQUIRED",
+      //   });
+      // }
+     
 
       const voice = await prisma.voice.findUnique({
         where: {
@@ -156,11 +155,11 @@ export const generationsRouter = createTRPCRouter({
         parseAs: "arrayBuffer",
       });
 
-      // Sentry.logger.info("Generation started", {
-      //   orgId: ctx.orgId,
-      //   voiceId: input.voiceId,
-      //   textLength: input.text.length,
-      // });
+      Sentry.logger.info("Generation started", {
+        orgId: ctx.orgId,
+        voiceId: input.voiceId,
+        textLength: input.text.length,
+      });
 
       if (error) {
         throw new TRPCError({
@@ -207,10 +206,10 @@ export const generationsRouter = createTRPCRouter({
           data: { r2ObjectKey },
         });
 
-        // Sentry.logger.info("Audio generated", {
-        //   orgId: ctx.orgId,
-        //   generationId: generation.id,
-        // });
+        Sentry.logger.info("Audio generated", {
+          orgId: ctx.orgId,
+          generationId: generation.id,
+        });
       } catch {
         if (generationId) {
           await prisma.generation
@@ -220,10 +219,10 @@ export const generationsRouter = createTRPCRouter({
             .catch(() => {});
         }
 
-        // Sentry.logger.error("Generation failed", {
-        //   orgId: ctx.orgId,
-        //   voiceId: input.voiceId,
-        // });
+        Sentry.logger.error("Generation failed", {
+          orgId: ctx.orgId,
+          voiceId: input.voiceId,
+        });
 
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

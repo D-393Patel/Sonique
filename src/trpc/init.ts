@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import { auth } from '@clerk/nextjs/server';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { cache } from 'react';
@@ -8,7 +9,6 @@ export const createTRPCContext = cache(async () => {
    */
   return {};
 });
- 
 // Avoid exporting the entire t-object
 // since it's not very descriptive.
 // For instance, the use of a t variable
@@ -19,13 +19,19 @@ const t = initTRPC.create({
    */
   transformer: superjson,
 });
- 
+
+const sentryMiddleware = t.middleware(
+  Sentry.trpcMiddleware({
+    attachRpcInput: true,
+  }),
+);
+
 // Base router and procedure helpers
 export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
-export const baseProcedure = t.procedure;
+export const baseProcedure = t.procedure.use(sentryMiddleware);
 
-//Authenticated protecture -calls auth() only when needed
+// Authenticated procedure - calls auth() only when needed
 export const authProcedure = baseProcedure.use(async ({ next }) => {
   const { userId } = await auth();
 
@@ -37,7 +43,6 @@ export const authProcedure = baseProcedure.use(async ({ next }) => {
     ctx: { userId },
   });
 });
-
 
 // Organization procedure - requires userId and orgId
 export const orgProcedure = baseProcedure.use(async ({ next }) => {
