@@ -9,6 +9,8 @@ export const env = createEnv({
     SUPABASE_ANON_KEY: z.string().min(1),
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
     SUPABASE_BUCKET_NAME: z.string().min(1),
+    CHATTERBOX_API_URL: z.url(),
+    CHATTERBOX_API_KEY:z.string().min(1)
   },
   experimental__runtimeEnv: {},
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
