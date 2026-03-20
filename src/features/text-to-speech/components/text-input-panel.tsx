@@ -3,10 +3,9 @@
 import { Coins } from "lucide-react";
 import { useStore } from "@tanstack/react-form";
 
-// ❌ Missing modules — commented out
-// import { SettingsDrawer } from "./settings-drawer";
-// import { HistoryDrawer } from "./history-drawer";
-// import { VoiceSelectorButton } from "./voice-selector-button";
+import { SettingsDrawer } from "./settings-drawer";
+import { HistoryDrawer } from "./history-drawer";
+import { VoiceSelectorButton } from "./voice-selector-button";
 
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,8 +18,9 @@ import {
 import { ttsFormOptions } from "./text-to-speech-form";
 import { GenerateButton } from "./generate-button";
 
-// ❌ Missing module — commented out
-// import { PromptSuggestions } from "./prompt-suggestions";
+
+
+import { PromptSuggestions } from "./prompt-suggestions";
 
 export function TextInputPanel() {
   const form = useTypedAppFormContext(ttsFormOptions);
@@ -55,14 +55,12 @@ export function TextInputPanel() {
         {/* Mobile layout */}
         <div className="flex flex-col gap-3 lg:hidden">
           <div className="flex items-center gap-2">
-
-            {/* ❌ Commented because components missing */}
-            {/*
+          
             <SettingsDrawer>
-              <VoiceSelectorButton />
+            <VoiceSelectorButton />
             </SettingsDrawer>
             <HistoryDrawer />
-            */}
+            
 
           </div>
 
@@ -106,12 +104,12 @@ export function TextInputPanel() {
         ) : (
           <div className="hidden lg:block">
 
-            {/* ❌ Missing component + implicit any */}
-            {/*
+           
+          
             <PromptSuggestions
               onSelect={(prompt) => form.setFieldValue("text", prompt)}
             />
-            */}
+           
 
           </div>
         )}

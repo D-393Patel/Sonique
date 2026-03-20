@@ -5,7 +5,7 @@ import { env } from "@/lib/env";
 import { TRPCError } from "@trpc/server";
 import { chatterbox } from "@/lib/chatterbox-client";
 import { prisma } from "@/lib/db";
-import { uploadAudio } from "@/lib/r2";
+import { uploadAudio, deleteAudio } from "@/lib/r2";
 import { TEXT_MAX_LENGTH } from "@/features/text-to-speech/data/constants";
 import { createTRPCRouter, orgProcedure } from "../init";
 
@@ -43,7 +43,41 @@ export const generationsRouter = createTRPCRouter({
 
     return generations;
   }),
+  delete: orgProcedure
+  .input(z.object({ id: z.string() }))
+  .mutation(async ({ input, ctx }) => {
+    const generation = await prisma.generation.findUnique({
+      where: {
+        id: input.id,
+        orgId: ctx.orgId,
+      },
+    });
 
+    if (!generation) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Generation not found",
+      });
+    }
+
+    try {
+      // ✅ Correct function
+      if (generation.r2ObjectKey) {
+        await deleteAudio(generation.r2ObjectKey).catch(() => {});
+      }
+
+      await prisma.generation.delete({
+        where: { id: input.id },
+      });
+
+      return { success: true };
+    } catch {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to delete generation",
+      });
+    }
+  }),
   create: orgProcedure
     .input(
       z.object({
@@ -225,3 +259,4 @@ export const generationsRouter = createTRPCRouter({
       };
     }),
 });
+
