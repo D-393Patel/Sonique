@@ -12,7 +12,6 @@ import { useTRPC } from "@/trpc/client";
 
 import { useAppForm } from "@/hooks/use-app-form";
 
-// ❌ Missing module
 // import { useCheckout } from "@/features/billing/hooks/use-checkout";
 
 const ttsFormSchema = z.object({
@@ -46,19 +45,17 @@ export function TextToSpeechForm({
   children: React.ReactNode;
   defaultValues?: TTSFormValues;
 }) {
-  // ❌ Missing module
-  // const trpc = useTRPC();
+
+  const trpc = useTRPC();
 
   const router = useRouter();
 
-  // ❌ Missing dependency
-  /*
+
   const createMutation = useMutation(
     trpc.generations.create.mutationOptions({}),
   );
-  */
 
-  // ❌ Missing module
+  
   // const { checkout } = useCheckout();
 
   const form = useAppForm({
@@ -67,10 +64,9 @@ export function TextToSpeechForm({
     validators: {
       onSubmit: ttsFormSchema,
     },
-    onSubmit: async ({ value: _value }) => {
+    onSubmit: async ({ value:value }) => {
       try {
 
-        /*
         const data = await createMutation.mutateAsync({
           text: value.text.trim(),
           voiceId: value.voiceId,
@@ -81,7 +77,7 @@ export function TextToSpeechForm({
         });
 
         router.push(`/text-to-speech/${data.id}`);
-        */
+        
 
         toast.success("Audio generated successfully!");
 
