@@ -12,7 +12,7 @@ import { useTRPC } from "@/trpc/client";
 
 import { useAppForm } from "@/hooks/use-app-form";
 
-// import { useCheckout } from "@/features/billing/hooks/use-checkout";
+import { useCheckout } from "@/features/billing/hooks/use-checkout";
 
 const ttsFormSchema = z.object({
   text: z.string().min(1, "Please enter some text"),
@@ -56,7 +56,7 @@ export function TextToSpeechForm({
   );
 
   
-  // const { checkout } = useCheckout();
+  const { checkout } = useCheckout();
 
   const form = useAppForm({
     ...ttsFormOptions,
@@ -89,7 +89,7 @@ export function TextToSpeechForm({
           toast.error("Subscription required", {
             action: {
               label: "Subscribe",
-              onClick: () => {}, // temporary placeholder
+              onClick: () => checkout(), 
             },
           });
         } else {
