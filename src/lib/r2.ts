@@ -12,14 +12,26 @@ type UploadAudioOptions = {
   contentType?: string;
 };
 
+//////////////////////////////////////////////////////
+// 🔧 FIX: Normalize key (handles .wav automatically)
+//////////////////////////////////////////////////////
+function normalizeKey(key: string): string {
+  return key.endsWith(".wav") ? key : `${key}.wav`;
+}
+
+//////////////////////////////////////////////////////
+// 📤 UPLOAD AUDIO
+//////////////////////////////////////////////////////
 export async function uploadAudio({
   buffer,
   key,
   contentType = "audio/wav",
 }: UploadAudioOptions): Promise<void> {
+  const finalKey = normalizeKey(key);
+
   const { error } = await supabase.storage
     .from(env.SUPABASE_BUCKET_NAME)
-    .upload(key, buffer, {
+    .upload(finalKey, buffer, {
       contentType,
       upsert: true,
     });
@@ -29,20 +41,30 @@ export async function uploadAudio({
   }
 }
 
+//////////////////////////////////////////////////////
+// 🗑️ DELETE AUDIO
+//////////////////////////////////////////////////////
 export async function deleteAudio(key: string): Promise<void> {
+  const finalKey = normalizeKey(key);
+
   const { error } = await supabase.storage
     .from(env.SUPABASE_BUCKET_NAME)
-    .remove([key]);
+    .remove([finalKey]);
 
   if (error) {
     throw new Error(`Delete failed: ${error.message}`);
   }
 }
 
+//////////////////////////////////////////////////////
+// 🔗 GET SIGNED URL (🔥 THIS FIXES YOUR ERROR)
+//////////////////////////////////////////////////////
 export async function getSignedAudioUrl(key: string): Promise<string> {
+  const finalKey = normalizeKey(key);
+
   const { data, error } = await supabase.storage
     .from(env.SUPABASE_BUCKET_NAME)
-    .createSignedUrl(key, 3600); // 1 hour
+    .createSignedUrl(finalKey, 3600);
 
   if (error) {
     throw new Error(`Signed URL failed: ${error.message}`);
