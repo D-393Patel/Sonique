@@ -21,10 +21,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { VoiceCreateForm } from "./voice-create-form";
 import { Button } from "@/components/ui/button";
-
-// ❌ COMMENTED: Missing module
-// import { useCheckout } from "@/features/billing/hooks/use-checkout";
-
+import { useCheckout } from "@/features/billing/hooks/use-checkout";
 import { useCallback } from "react";
 import { toast } from "sonner";
 
@@ -41,8 +38,7 @@ export function VoiceCreateDialog({
 }: VoiceCreateDialogProps) {
   const isMobile = useIsMobile();
 
-  // ❌ COMMENTED: depends on missing hook
-  // const { checkout } = useCheckout();
+  const { checkout } = useCheckout();
 
   const handleError = useCallback(
     (message: string) => {
@@ -50,23 +46,14 @@ export function VoiceCreateDialog({
         toast.error("Subscription required", {
           action: {
             label: "Subscribe",
-            // ❌ COMMENTED: checkout not available
-            // onClick: () => checkout(),
-
-            // ✅ fallback (optional)
-            onClick: () => {
-              console.log("Redirect to billing page");
-            },
+            onClick: () => checkout(),
           },
         });
       } else {
         toast.error(message);
       }
     },
-    [
-      // ❌ removed dependency
-      // checkout
-    ],
+    [checkout],
   );
 
   if (isMobile) {
@@ -96,7 +83,7 @@ export function VoiceCreateDialog({
         </DrawerContent>
       </Drawer>
     );
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -112,4 +99,4 @@ export function VoiceCreateDialog({
       </DialogContent>
     </Dialog>
   );
-}
+};

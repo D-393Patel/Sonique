@@ -2,8 +2,8 @@ import { auth } from "@clerk/nextjs/server";
 import { parseBuffer } from "music-metadata";
 import { z } from "zod";
 
-// ❌ COMMENTED: Module not found
-// import { polar } from "@/lib/polar";
+
+import { polar } from "@/lib/polar";
 
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/db";
@@ -28,8 +28,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // ❌ COMMENTED: POLAR SUBSCRIPTION CHECK (depends on missing polar module)
-  /*
+  
   try {
     const customerState = await polar.customers.getStateExternal({
       externalId: orgId,
@@ -50,7 +49,7 @@ export async function POST(request: Request) {
       { status: 403 }
     );
   }
-  */
+
 
   const url = new URL(request.url);
 
@@ -180,14 +179,11 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-
-  // ❌ COMMENTED: POLAR USAGE METERING (env + polar both causing error)
-  /*
   polar.events
     .ingest({
       events: [
         {
-          name: env.POLAR_METER_VOICE_CREATION,
+          name:"voice_creation",
           externalCustomerId: orgId,
           metadata: {},
           timestamp: new Date(),
@@ -195,7 +191,7 @@ export async function POST(request: Request) {
       ],
     })
     .catch(() => {});
-  */
+  
 
   return Response.json(
     { name, message: "Voice created successfully" },
