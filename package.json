@@ -8,6 +8,8 @@
     "start": "next start",
     "postinstall": "prisma generate",
     "lint": "eslint",
+    "ml:eval:dry": "python ml/evals/run_tts_eval.py --dry-run",
+    "ml:synthetic": "python ml/data/generate_synthetic_prompts.py",
     "sync-api": "tsx scripts/sync-api.ts"
   },
   "dependencies": {

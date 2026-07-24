@@ -1,0 +1,8 @@
+{"id":"clean_short","category":"clean","text":"Welcome to Sonique. This is a clear baseline voice generation test."}
+{"id":"numbers_symbols","category":"robustness","text":"Order number HX-2047 costs Rs. 1,299.50 and ships on 26 July at 09:30 AM."}
+{"id":"code_switch_hinglish","category":"multilingual","text":"Namaste, today we will build a fast AI voice demo that sounds natural and professional."}
+{"id":"punctuation_heavy","category":"robustness","text":"Wait... are you sure? Yes, absolutely sure; but listen carefully: timing, tone, and pauses matter."}
+{"id":"long_form","category":"long_form","text":"The rain settled into a steady rhythm outside the studio window while the narrator prepared for the final take. Every sentence needed to sound calm, precise, and emotionally honest without becoming dramatic."}
+{"id":"adversarial_abbrev","category":"adversarial","text":"Dr. Rao reviewed KYC docs, PAN IDs, OCR errors, UPI refs, and approx. 17 mismatched DOB fields."}
+{"id":"customer_support","category":"domain","text":"Thank you for calling support. I can help verify your account and explain why the transaction was flagged."}
+{"id":"identity_verification","category":"domain","text":"Please read the verification phrase aloud: my identity is secure and this request was made by me."}

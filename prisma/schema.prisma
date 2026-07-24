@@ -70,6 +70,13 @@ model Generation {
   topP              Float
   topK              Int
   repetitionPenalty Float
+  promptLength      Int?
+  provider          String?
+  modelVersion      String?
+  latencyMs         Int?
+  audioDurationSec  Float?
+  audioSizeBytes    Int?
+  estimatedCostCents Float?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

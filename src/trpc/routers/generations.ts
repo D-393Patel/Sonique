@@ -1,10 +1,13 @@
 import * as Sentry from "@sentry/nextjs";
 import { z } from "zod";
 import { polar } from "@/lib/polar";
-import { env } from "@/lib/env";
 import { TRPCError } from "@trpc/server";
 import { chatterbox } from "@/lib/chatterbox-client";
 import { prisma } from "@/lib/db";
+import {
+  estimateGenerationCostCents,
+  getGeneratedAudioMetadata,
+} from "@/lib/generation-observability";
 import { uploadAudio, deleteAudio } from "@/lib/r2";
 import { TEXT_MAX_LENGTH } from "@/features/text-to-speech/data/constants";
 import { createTRPCRouter, orgProcedure } from "../init";
@@ -142,6 +145,7 @@ export const generationsRouter = createTRPCRouter({
         });
       }
 
+      const generationStartedAt = performance.now();
       const { data, error } = await chatterbox.POST("/generate", {
         body: {
           prompt: input.text,
@@ -154,11 +158,13 @@ export const generationsRouter = createTRPCRouter({
         },
         parseAs: "arrayBuffer",
       });
+      const latencyMs = Math.round(performance.now() - generationStartedAt);
 
       Sentry.logger.info("Generation started", {
         orgId: ctx.orgId,
         voiceId: input.voiceId,
         textLength: input.text.length,
+        latencyMs,
       });
 
       if (error) {
@@ -176,6 +182,7 @@ export const generationsRouter = createTRPCRouter({
       }
 
       const buffer = Buffer.from(data);
+      const audioMetadata = await getGeneratedAudioMetadata(buffer);
       let generationId: string | null = null;
       let r2ObjectKey: string | null = null;
 
@@ -190,6 +197,13 @@ export const generationsRouter = createTRPCRouter({
             topP: input.topP,
             topK: input.topK,
             repetitionPenalty: input.repetitionPenalty,
+            promptLength: input.text.length,
+            provider: "chatterbox",
+            modelVersion: "chatterbox-tts",
+            latencyMs,
+            audioDurationSec: audioMetadata.audioDurationSec,
+            audioSizeBytes: audioMetadata.audioSizeBytes,
+            estimatedCostCents: estimateGenerationCostCents(input.text),
           },
           select: {
             id: true,
@@ -209,6 +223,9 @@ export const generationsRouter = createTRPCRouter({
         Sentry.logger.info("Audio generated", {
           orgId: ctx.orgId,
           generationId: generation.id,
+          latencyMs,
+          audioDurationSec: audioMetadata.audioDurationSec,
+          audioSizeBytes: audioMetadata.audioSizeBytes,
         });
       } catch {
         if (generationId) {
@@ -237,6 +254,16 @@ export const generationsRouter = createTRPCRouter({
         });
       }
 
+      const eventMetadata: Record<string, number> = {
+        characters: input.text.length,
+        latencyMs,
+        audioSizeBytes: audioMetadata.audioSizeBytes,
+      };
+
+      if (audioMetadata.audioDurationSec !== null) {
+        eventMetadata.audioDurationSec = audioMetadata.audioDurationSec;
+      }
+
       
       polar.events
         .ingest({
@@ -244,7 +271,7 @@ export const generationsRouter = createTRPCRouter({
             {
               name:"tts_generation",
               externalCustomerId: ctx.orgId,
-              metadata: { characters: input.text.length },
+              metadata: eventMetadata,
               timestamp: new Date(),
             },
           ],

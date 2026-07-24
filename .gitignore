@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -52,3 +53,6 @@ __pycache__
 chatterbox_tts.py
 # Sentry Config File
 .env.sentry-build-plugin
+
+# ML evaluation outputs
+/ml/evals/runs/
